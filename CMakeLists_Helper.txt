@@ -1,7 +1,7 @@
 ################### GOOGLE TEST ###########################
-# function - sync_g_test_framework
+# function - DMA_sync_g_test_framework
 # Syncs gtest framework, when project is being configured
-function (sync_g_test_framework)
+function (DMA_sync_g_test_framework)
     include(FetchContent)
     FetchContent_Declare(
       googletest
@@ -9,13 +9,13 @@ function (sync_g_test_framework)
       GIT_TAG        v1.10.x
     ) 
     FetchContent_MakeAvailable(googletest)
-endfunction(sync_g_test_framework)
+endfunction(DMA_sync_g_test_framework)
 
-# function - add_g_test
+# function - DMA_add_g_test
 # Adds gtest-based unit-test to the build
 # param_0 - name of the test. Should be the same, as the name of the *.cpp file, which implements the test
 # param_1 ... param_n - libraries, which should be linked to a test
-function(add_g_test)
+function(DMA_add_g_test)
     if (DEFINED ARGV0)
         if(COMMAND cmake_policy)
           cmake_policy(SET CMP0003 NEW)
@@ -33,27 +33,33 @@ function(add_g_test)
             endforeach()
         endif()
     endif()
-endfunction(add_g_test)
+endfunction(DMA_add_g_test)
 ################### GOOGLE TEST ( END ) ###################
 
 ################### DMA_Plantuml ##########################
-# function - sync_dma_plantuml
+# function - DMA_sync_plantuml
 # Syncs dma_plantuml sub-project, when project is being configured
-function (sync_dma_plantuml)
+function (DMA_sync_plantuml)
     include(FetchContent)
     FetchContent_Declare(
       dma_plantuml
       GIT_REPOSITORY https://github.com/svlad-90/DMA_Plantuml.git
       GIT_TAG        master
     ) 
-    FetchContent_MakeAvailable(dma_plantuml)
-endfunction(sync_dma_plantuml)
+    FetchContent_GetProperties(dma_plantuml)
+    if(NOT dma_plantuml_POPULATED)
+        FetchContent_Populate(dma_plantuml)
+        add_subdirectory(${dma_plantuml_SOURCE_DIR}/DMA_Plantuml ${dma_plantuml_BINARY_DIR}/DMA_Plantuml)
+    endif()
+    
+    include_directories(${dma_plantuml_SOURCE_DIR}/DMA_Plantuml/include)
+endfunction(DMA_sync_plantuml)
 ################### DMA_Plantuml ( END ) ###################
 
 ################### DMA_Framework ##########################
-# function - sync_dma_framework
+# function - DMA_sync_framework
 # Syncs dma_framework sub-project, when project is being configured
-function (sync_dma_framework)
+function (DMA_sync_framework)
     include(FetchContent)
     FetchContent_Declare(
       dma_framework
@@ -61,11 +67,11 @@ function (sync_dma_framework)
       GIT_TAG        master
     ) 
     FetchContent_MakeAvailable(dma_framework)
-endfunction(sync_dma_framework)
+endfunction(DMA_sync_framework)
 ################### DMA_Framework ( END ) ###################
 
 ################### CLANG_TIDY ############################
-function(add_subdirectory_with_clang_tidy subdirectory)
+function(DMA_add_subdirectory_with_clang_tidy subdirectory)
     if( DMA_CLANG_TIDY_BUILD )
         message("-- [DMA_Plantuml]: clang-tidy build.")
         set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
@@ -75,5 +81,14 @@ function(add_subdirectory_with_clang_tidy subdirectory)
     endif()
 
     add_subdirectory(${subdirectory})
-endfunction(add_subdirectory_with_clang_tidy)
+endfunction(DMA_add_subdirectory_with_clang_tidy)
 ################### CLANG_TIDY ( END ) ####################
+
+################### PREPARE ###############################
+macro (DMA_Prepare)
+    if (MSVC)
+       set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    endif()
+endmacro(DMA_Prepare)
+################### PREPARE ( AND )########################
