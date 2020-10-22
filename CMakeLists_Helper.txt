@@ -9,6 +9,7 @@ function (DMA_sync_g_test_framework)
       GIT_TAG        v1.10.x
     ) 
     
+    FetchContent_GetProperties(googletest)
     if(NOT googletest_POPULATED)
         FetchContent_Populate(googletest)
         option(
