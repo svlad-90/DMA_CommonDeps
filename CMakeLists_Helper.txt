@@ -18,8 +18,6 @@ function (DMA_sync_g_test_framework)
         set(gtest_force_shared_crt ON)
         add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
     endif()
-    
-    include_directories(${dma_plantuml_SOURCE_DIR}/DMA_Plantuml/include)
 endfunction(DMA_sync_g_test_framework)
 
 # function - DMA_add_g_test
